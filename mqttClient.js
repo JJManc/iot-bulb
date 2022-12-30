@@ -88,8 +88,10 @@ async function publish(msg) {
  }
 
 const onReceivedInternal = async (topic, payload, dup, qos, retain) => {
-    const json = decoder.decode(payload);
+    const jsonString = decoder.decode(payload);
     
+    let json = JSON.parse(jsonString);
+
     if(_onReceived) {
         await _onReceived(json);
     }
