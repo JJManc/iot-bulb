@@ -7,7 +7,9 @@ const Gpio = onoff.Gpio;
 const led = new Gpio(4, 'out');
 const button = new Gpio(17, 'in', 'rising', {debounceTimeout: 10});
 
-client.subscribe("virtualButtonPush", function(json) {
+await client.connect();
+
+await client.subscribe("virtualButtonPush", function(json) {
   // { "pushedState": true }
   setLedState(json.pushedState);
 });
