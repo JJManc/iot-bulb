@@ -1,11 +1,16 @@
 'use strict';
 
 import onoff from 'onoff';
-import publisher from './publisher.js';
+import client from './mqttClient.js';
 
 const Gpio = onoff.Gpio;
 const led = new Gpio(4, 'out');
 const button = new Gpio(17, 'in', 'rising', {debounceTimeout: 10});
+
+client.subscribe("virtualButtonPush", function(json) {
+  // { "pushedState": true }
+  setLedState(json.pushedState);
+});
 
 button.watch(async (err, value) => {
   if (err) {
@@ -42,9 +47,9 @@ const setLedState = async (isOn) => {
 
     console.log(msg); //Future will be event
 
-    await publisher.connect();
+    await client.connect();
 
-    await publisher.publish(msg)
+    await client.publish(msg)
     .then(
       async (completed) => {
 //        await publisher.disconnect();
@@ -58,8 +63,6 @@ const setLedState = async (isOn) => {
 
       exit(-1);
     });
-
-    
 }
 
 export default {
