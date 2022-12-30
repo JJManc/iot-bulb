@@ -48,7 +48,7 @@ const setLedState = async (isOn) => {
     .then(
       async (completed) => {
 //        await publisher.disconnect();
-	console.log('Published');
+//	console.log('Published');
     },
     (rejected) => {
       console.log("Rejected error: " + rejected);
