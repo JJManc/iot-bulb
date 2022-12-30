@@ -95,8 +95,6 @@ const onReceivedInternal = async (topic, payload, dup, qos, retain) => {
     }
 
     console.log(json);
-    
-    resolve();
 }
 
 async function subscribe(topic, onReceived) {
