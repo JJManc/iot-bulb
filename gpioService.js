@@ -9,9 +9,9 @@ const button = new Gpio(17, 'in', 'rising', {debounceTimeout: 10});
 
 await client.connect();
 
-await client.subscribe("virtualButtonPush", function(json) {
+await client.subscribe("virtualButtonPush", async function (json) {
   // { "pushedState": true }
-  setLedState(json.pushedState);
+  await setLedState(json.pushedState);
 });
 
 button.watch(async (err, value) => {

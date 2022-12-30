@@ -91,7 +91,7 @@ const onReceivedInternal = async (topic, payload, dup, qos, retain) => {
     const json = decoder.decode(payload);
     
     if(_onReceived) {
-        _onReceived(json);
+        await _onReceived(json);
     }
 
     console.log(json);
