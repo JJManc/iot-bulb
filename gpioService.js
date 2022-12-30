@@ -38,7 +38,7 @@ const setLedState = async (isOn) => {
     let bit = 0;
     let txt = "off";
 
-    if(isOn){
+    if(isOn === true) {
         bit = 1;
         txt = "on";
     }
