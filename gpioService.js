@@ -11,7 +11,8 @@ await client.connect();
 
 await client.subscribe("virtualButtonPush", async function (json) {
   // { "pushedState": true }
-  await setLedState(json.pushedState);
+  let payload = JSON.parse(json);
+  await setLedState(payload.pushedState);
 });
 
 button.watch(async (err, value) => {
