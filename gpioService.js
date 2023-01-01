@@ -7,9 +7,12 @@ const Gpio = onoff.Gpio;
 const led = new Gpio(4, 'out');
 const button = new Gpio(17, 'in', 'rising', {debounceTimeout: 10});
 
-client.subscribe("virtualButtonPush", function(json) {
+await client.connect();
+
+await client.subscribe("virtualButtonPush", async function (json) {
   // { "pushedState": true }
-  setLedState(json.pushedState);
+  //let payload = JSON.parse(json);
+  await setLedState(json.pushedState);
 });
 
 button.watch(async (err, value) => {
@@ -36,7 +39,7 @@ const setLedState = async (isOn) => {
     let bit = 0;
     let txt = "off";
 
-    if(isOn){
+    if(isOn) {
         bit = 1;
         txt = "on";
     }

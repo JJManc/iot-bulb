@@ -3,14 +3,16 @@
 import iotsdk from 'aws-iot-device-sdk-v2';
 import { exit } from 'process';
 import awscrt from 'aws-crt';
+import util from 'util';
 
 //Short names
 const mqtt = iotsdk.mqtt;
 const http = awscrt.http;
 const io = awscrt.io;
 const iot = awscrt.iot;
-const decoder = new TextDecoder('utf8');
-var connection;
+const decoder = new util.TextDecoder('utf8');
+
+var _connection;
 var _argv;
 var _onReceived;
 
@@ -46,9 +48,10 @@ function intialize() {
  //Make sure to change the port
  //In the future must expose/export main
  async function connect() {
-    connection = buildConnection(_argv); 
+    //TODO: Check to see if connection is open already, if it is, don't connect again
+    _connection = buildConnection(_argv); 
     
-    await connection
+    await _connection
         .connect()
         .catch((error) => {
             console.log("Connect error: " + error);
@@ -60,7 +63,7 @@ function intialize() {
 //When do we disconnect? Disconnect when the process stops?
 //Can I lose my connection?
 async function disconnect() {
-    await connection
+    await _connection
         .disconnect()
         .catch((error) => {
             console.log("Disconnect error: " + error);
@@ -74,7 +77,7 @@ async function publish(msg) {
          try {
             const json = JSON.stringify(msg);
             
-            connection
+            _connection
                 .publish(_argv.topic, json, mqtt.QoS.AtLeastOnce)
                 .then(resolve());
          }
@@ -85,19 +88,19 @@ async function publish(msg) {
  }
 
 const onReceivedInternal = async (topic, payload, dup, qos, retain) => {
-    const json = decoder.decode(payload);
+    const jsonString = decoder.decode(payload);
     
+    let json = JSON.parse(jsonString);
+
     if(_onReceived) {
-        _onReceived(json);
+        await _onReceived(json);
     }
 
     console.log(json);
-    
-    resolve();
 }
 
 async function subscribe(topic, onReceived) {
-    await connection.subscribe(topic, mqtt.QoS.AtLeastOnce, onReceivedInternal);
+    await _connection.subscribe(topic, mqtt.QoS.AtLeastOnce, onReceivedInternal);
 
     _onReceived = onReceived;
 }
